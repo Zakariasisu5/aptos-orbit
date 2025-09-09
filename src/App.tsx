@@ -4,7 +4,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
+import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import SendMoney from "./pages/SendMoney";
+import ReceiveMoney from "./pages/ReceiveMoney";
+import ForexSwap from "./pages/ForexSwap";
+import Payroll from "./pages/Payroll";
+import Treasury from "./pages/Treasury";
+import Transactions from "./pages/Transactions";
 import Navbar from "./components/layout/Navbar";
 import NotFound from "./pages/NotFound";
 
@@ -19,6 +26,7 @@ const App = () => (
         <div className="min-h-screen bg-background">
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={
               <div>
                 <Navbar />
@@ -28,37 +36,37 @@ const App = () => (
             <Route path="/send" element={
               <div>
                 <Navbar />
-                <div className="p-8 text-center text-foreground-muted">Send Money - Coming Soon</div>
+                <SendMoney />
               </div>
             } />
             <Route path="/receive" element={
               <div>
                 <Navbar />
-                <div className="p-8 text-center text-foreground-muted">Receive Money - Coming Soon</div>
+                <ReceiveMoney />
               </div>
             } />
             <Route path="/forex" element={
               <div>
                 <Navbar />
-                <div className="p-8 text-center text-foreground-muted">FOREX - Coming Soon</div>
+                <ForexSwap />
               </div>
             } />
             <Route path="/payroll" element={
               <div>
                 <Navbar />
-                <div className="p-8 text-center text-foreground-muted">Payroll - Coming Soon</div>
+                <Payroll />
               </div>
             } />
             <Route path="/treasury" element={
               <div>
                 <Navbar />
-                <div className="p-8 text-center text-foreground-muted">Treasury - Coming Soon</div>
+                <Treasury />
               </div>
             } />
             <Route path="/transactions" element={
               <div>
                 <Navbar />
-                <div className="p-8 text-center text-foreground-muted">Transactions - Coming Soon</div>
+                <Transactions />
               </div>
             } />
             <Route path="*" element={<NotFound />} />

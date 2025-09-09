@@ -10,11 +10,11 @@ export const mockBalances = {
 export const mockTransactions = [
   {
     id: '1',
-    type: 'send',
+    type: 'send' as const,
     amount: 500.00,
     currency: 'USDC',
     recipient: 'john.doe@example.com',
-    status: 'completed',
+    status: 'completed' as const,
     timestamp: new Date(Date.now() - 3600000).toISOString(),
     txHash: '0xabc123...',
     fee: 0.25,
@@ -56,15 +56,15 @@ export const mockTransactions = [
 ];
 
 export const mockFXRates = {
-  'APT/USDC': { rate: 7.85, change24h: 2.3, trend: 'up' },
-  'WETH/USDC': { rate: 1996.50, change24h: -1.2, trend: 'down' },
-  'USDT/USDC': { rate: 1.0001, change24h: 0.01, trend: 'stable' },
+  'APT/USDC': { rate: 7.85, change24h: 2.3, trend: 'up' as const },
+  'WETH/USDC': { rate: 1996.50, change24h: -1.2, trend: 'down' as const },
+  'USDT/USDC': { rate: 1.0001, change24h: 0.01, trend: 'stable' as const },
 };
 
 export const mockPayrollData = [
   {
     id: '1',
-    employee: 'John Doe',
+    name: 'John Doe',
     email: 'john.doe@company.com',
     wallet: '0x1234...5678',
     amount: 3500.00,
@@ -73,7 +73,7 @@ export const mockPayrollData = [
   },
   {
     id: '2',
-    employee: 'Alice Smith',
+    name: 'Alice Smith',
     email: 'alice.smith@company.com',
     wallet: '0x9876...5432',
     amount: 4200.00,
@@ -82,7 +82,7 @@ export const mockPayrollData = [
   },
   {
     id: '3',
-    employee: 'Bob Johnson',
+    name: 'Bob Johnson',
     email: 'bob.johnson@company.com',
     wallet: '0x1111...2222',
     amount: 3800.00,

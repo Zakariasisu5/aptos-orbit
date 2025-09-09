@@ -30,7 +30,7 @@ const Navbar = () => {
               <Wallet className="w-5 h-5 text-white" />
             </div>
             <span className="font-display font-bold text-xl text-gradient">
-              AptosRemit
+              GlobePayX
             </span>
           </Link>
 
