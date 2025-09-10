@@ -13,6 +13,7 @@ import {
   TrendingUp,
   CheckCircle
 } from 'lucide-react';
+import { mockSponsors, mockTestimonials } from '@/services/mockData';
 
 const Landing = () => {
   const features = [
@@ -113,7 +114,7 @@ const Landing = () => {
       <section className="relative z-10 container mx-auto px-6 mb-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4 font-display">
-            Why Choose <span className="text-gradient">AptosRemit</span>
+            Why Choose <span className="text-gradient">GlobePayX</span>
           </h2>
           <p className="text-xl text-foreground-muted max-w-2xl mx-auto">
             Experience the power of blockchain technology with traditional finance ease-of-use.
@@ -146,6 +147,70 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Sponsors Section */}
+      <section className="relative z-10 container mx-auto px-6 mb-20">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl font-bold mb-4 font-display">
+            Trusted by Industry Leaders
+          </h2>
+          <p className="text-foreground-muted">
+            Partnering with the world's leading financial institutions
+          </p>
+        </div>
+        
+        <div className="relative overflow-hidden">
+          <div className="flex animate-scroll-right space-x-12">
+            {[...mockSponsors, ...mockSponsors].map((sponsor, index) => (
+              <div 
+                key={`${sponsor.name}-${index}`}
+                className="flex-shrink-0 bg-card/20 backdrop-blur-sm border border-border rounded-xl p-6 min-w-[200px]"
+              >
+                <div className="text-center">
+                  <div className="text-4xl mb-3">{sponsor.logo}</div>
+                  <h3 className="text-lg font-semibold mb-1">{sponsor.name}</h3>
+                  <p className="text-sm text-foreground-muted">{sponsor.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="relative z-10 container mx-auto px-6 mb-20">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl font-bold mb-4 font-display">
+            What Our Customers Say
+          </h2>
+          <p className="text-foreground-muted">
+            Real feedback from finance leaders using GlobePayX
+          </p>
+        </div>
+        
+        <div className="relative overflow-hidden">
+          <div className="flex animate-scroll-left space-x-8">
+            {[...mockTestimonials, ...mockTestimonials].map((testimonial, index) => (
+              <Card 
+                key={`${testimonial.id}-${index}`}
+                variant="glass" 
+                className="flex-shrink-0 min-w-[350px] max-w-[350px]"
+              >
+                <div className="text-center">
+                  <div className="text-4xl mb-4">{testimonial.avatar}</div>
+                  <blockquote className="text-foreground-muted mb-6 italic">
+                    "{testimonial.content}"
+                  </blockquote>
+                  <div>
+                    <div className="font-semibold">{testimonial.name}</div>
+                    <div className="text-sm text-foreground-muted">{testimonial.role}</div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="relative z-10 container mx-auto px-6 pb-20">
         <Card variant="gradient" className="text-center p-12">
@@ -153,7 +218,7 @@ const Landing = () => {
             Ready to Transform Your Financial Operations?
           </h3>
           <p className="text-lg text-foreground-muted mb-8 max-w-2xl mx-auto">
-            Join thousands of businesses already using AptosRemit for their global financial needs.
+            Join thousands of businesses already using GlobePayX for their global financial needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="accent" size="lg">
