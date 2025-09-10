@@ -14,6 +14,7 @@ import Treasury from "./pages/Treasury";
 import Transactions from "./pages/Transactions";
 import Navbar from "./components/layout/Navbar";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -28,46 +29,60 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={
-              <div>
-                <Navbar />
-                <Dashboard />
-              </div>
+              <ProtectedRoute>
+                <div>
+                  <Navbar />
+                  <Dashboard />
+                </div>
+              </ProtectedRoute>
             } />
             <Route path="/send" element={
-              <div>
-                <Navbar />
-                <SendMoney />
-              </div>
+              <ProtectedRoute>
+                <div>
+                  <Navbar />
+                  <SendMoney />
+                </div>
+              </ProtectedRoute>
             } />
             <Route path="/receive" element={
-              <div>
-                <Navbar />
-                <ReceiveMoney />
-              </div>
+              <ProtectedRoute>
+                <div>
+                  <Navbar />
+                  <ReceiveMoney />
+                </div>
+              </ProtectedRoute>
             } />
             <Route path="/forex" element={
-              <div>
-                <Navbar />
-                <ForexSwap />
-              </div>
+              <ProtectedRoute>
+                <div>
+                  <Navbar />
+                  <ForexSwap />
+                </div>
+              </ProtectedRoute>
             } />
             <Route path="/payroll" element={
-              <div>
-                <Navbar />
-                <Payroll />
-              </div>
+              <ProtectedRoute>
+                <div>
+                  <Navbar />
+                  <Payroll />
+                </div>
+              </ProtectedRoute>
             } />
             <Route path="/treasury" element={
-              <div>
-                <Navbar />
-                <Treasury />
-              </div>
+              <ProtectedRoute>
+                <div>
+                  <Navbar />
+                  <Treasury />
+                </div>
+              </ProtectedRoute>
             } />
             <Route path="/transactions" element={
-              <div>
-                <Navbar />
-                <Transactions />
-              </div>
+              <ProtectedRoute>
+                <div>
+                  <Navbar />
+                  <Transactions />
+                </div>
+              </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />
           </Routes>

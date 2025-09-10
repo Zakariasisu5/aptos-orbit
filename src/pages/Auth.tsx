@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/GlassCard';
@@ -7,37 +7,118 @@ import { Label } from '@/components/ui/label';
 import { Wallet, Mail, Lock, Github, Chrome } from 'lucide-react';
 import BackgroundBubbles from '@/components/animations/BackgroundBubbles';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useWalletStore } from '@/store/walletStore';
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { connect } = useWalletStore();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleAuth = () => {
-    // Mock authentication
-    if (email && password) {
-      toast({
-        title: "Authentication Successful",
-        description: `${isLogin ? 'Logged in' : 'Account created'} successfully!`,
-      });
-      navigate('/dashboard');
-    } else {
+  // Check if user is already authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/dashboard');
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
+  const handleEmailAuth = async () => {
+    if (!email || !password) {
       toast({
         title: "Authentication Failed",
         description: "Please enter valid credentials",
         variant: "destructive",
       });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/dashboard`
+          }
+        });
+        if (error) throw error;
+        
+        toast({
+          title: "Check your email",
+          description: "Please check your email for a confirmation link",
+        });
+        return;
+      }
+
+      toast({
+        title: "Authentication Successful",
+        description: `${isLogin ? 'Logged in' : 'Account created'} successfully!`,
+      });
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast({
+        title: "Authentication Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleWalletConnect = (walletName: string) => {
-    toast({
-      title: "Wallet Connected",
-      description: `${walletName} wallet connected successfully!`,
-    });
-    navigate('/dashboard');
+  const handleSocialAuth = async (provider: 'google' | 'github') => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        title: "Authentication Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
+  };
+
+  const handleWalletConnect = async (walletType: 'petra' | 'martian' | 'pontem') => {
+    setLoading(true);
+    try {
+      await connect(walletType);
+      toast({
+        title: "Wallet Connected",
+        description: `${walletType.charAt(0).toUpperCase() + walletType.slice(1)} wallet connected successfully!`,
+      });
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast({
+        title: "Wallet Connection Failed",
+        description: error.message || `Failed to connect ${walletType} wallet`,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -96,9 +177,10 @@ const Auth = () => {
                 variant="primary" 
                 size="lg" 
                 className="w-full"
-                onClick={handleAuth}
+                onClick={handleEmailAuth}
+                disabled={loading}
               >
-                {isLogin ? 'Sign In' : 'Create Account'}
+                {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Create Account')}
               </Button>
 
               <div className="text-center">
@@ -120,11 +202,11 @@ const Auth = () => {
               </p>
               
               <div className="grid grid-cols-2 gap-3">
-                <Button variant="outline" onClick={() => handleAuth()}>
+                <Button variant="outline" onClick={() => handleSocialAuth('google')} disabled={loading}>
                   <Chrome className="w-4 h-4 mr-2" />
                   Google
                 </Button>
-                <Button variant="outline" onClick={() => handleAuth()}>
+                <Button variant="outline" onClick={() => handleSocialAuth('github')} disabled={loading}>
                   <Github className="w-4 h-4 mr-2" />
                   GitHub
                 </Button>
@@ -144,7 +226,8 @@ const Auth = () => {
                   variant="accent" 
                   size="lg" 
                   className="w-full"
-                  onClick={() => handleWalletConnect('Petra')}
+                  onClick={() => handleWalletConnect('petra')}
+                  disabled={loading}
                 >
                   <Wallet className="w-4 h-4 mr-2" />
                   Connect Petra Wallet
@@ -152,7 +235,8 @@ const Auth = () => {
                 <Button 
                   variant="outline" 
                   className="w-full"
-                  onClick={() => handleWalletConnect('Martian')}
+                  onClick={() => handleWalletConnect('martian')}
+                  disabled={loading}
                 >
                   <Wallet className="w-4 h-4 mr-2" />
                   Connect Martian Wallet
@@ -160,7 +244,8 @@ const Auth = () => {
                 <Button 
                   variant="outline" 
                   className="w-full"
-                  onClick={() => handleWalletConnect('Pontem')}
+                  onClick={() => handleWalletConnect('pontem')}
+                  disabled={loading}
                 >
                   <Wallet className="w-4 h-4 mr-2" />
                   Connect Pontem Wallet
