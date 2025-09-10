@@ -8,12 +8,9 @@ import { Wallet, Mail, Lock, Github, Chrome } from 'lucide-react';
 import BackgroundBubbles from '@/components/animations/BackgroundBubbles';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useWalletStore } from '@/store/walletStore';
-
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { connect } = useWalletStore();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -101,25 +98,6 @@ const Auth = () => {
     }
   };
 
-  const handleWalletConnect = async (walletType: 'petra' | 'martian' | 'pontem') => {
-    setLoading(true);
-    try {
-      await connect(walletType);
-      toast({
-        title: "Wallet Connected",
-        description: `${walletType.charAt(0).toUpperCase() + walletType.slice(1)} wallet connected successfully!`,
-      });
-      navigate('/dashboard');
-    } catch (error: any) {
-      toast({
-        title: "Wallet Connection Failed",
-        description: error.message || `Failed to connect ${walletType} wallet`,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -214,45 +192,6 @@ const Auth = () => {
             </div>
           </Card>
 
-          {/* Wallet Connect */}
-          <Card variant="glass" className="slide-up" style={{ animationDelay: '0.2s' }}>
-            <div className="space-y-3">
-              <p className="text-sm text-foreground-muted text-center mb-4">
-                Connect your Aptos wallet
-              </p>
-              
-              <div className="space-y-2">
-                <Button 
-                  variant="accent" 
-                  size="lg" 
-                  className="w-full"
-                  onClick={() => handleWalletConnect('petra')}
-                  disabled={loading}
-                >
-                  <Wallet className="w-4 h-4 mr-2" />
-                  Connect Petra Wallet
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => handleWalletConnect('martian')}
-                  disabled={loading}
-                >
-                  <Wallet className="w-4 h-4 mr-2" />
-                  Connect Martian Wallet
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => handleWalletConnect('pontem')}
-                  disabled={loading}
-                >
-                  <Wallet className="w-4 h-4 mr-2" />
-                  Connect Pontem Wallet
-                </Button>
-              </div>
-            </div>
-          </Card>
         </div>
       </div>
     </div>
