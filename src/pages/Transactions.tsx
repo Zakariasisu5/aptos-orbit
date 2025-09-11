@@ -126,8 +126,9 @@ const Transactions = () => {
 
       {/* Filters and Search */}
       <Card variant="glass" className="slide-up">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex-1 min-w-64">
+        <div className="space-y-4">
+          {/* Search */}
+          <div className="w-full">
             <div className="relative">
               <Search className="absolute left-3 top-3 w-4 h-4 text-foreground-muted" />
               <Input
@@ -139,36 +140,39 @@ const Transactions = () => {
             </div>
           </div>
           
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="send">Send</SelectItem>
-              <SelectItem value="receive">Receive</SelectItem>
-              <SelectItem value="swap">Swap</SelectItem>
-              <SelectItem value="payroll">Payroll</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="processing">Processing</SelectItem>
-              <SelectItem value="failed">Failed</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button variant="outline" onClick={exportTransactions}>
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
+          {/* Filters Row */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="flex-1 min-w-[120px]">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="send">Send</SelectItem>
+                <SelectItem value="receive">Receive</SelectItem>
+                <SelectItem value="swap">Swap</SelectItem>
+                <SelectItem value="payroll">Payroll</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="flex-1 min-w-[120px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="processing">Processing</SelectItem>
+                <SelectItem value="failed">Failed</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Button variant="outline" onClick={exportTransactions} className="flex-shrink-0">
+              <Download className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">Export</span>
+            </Button>
+          </div>
         </div>
       </Card>
 
@@ -198,11 +202,12 @@ const Transactions = () => {
                 return (
                   <div 
                     key={tx.id}
-                    className="flex items-center justify-between p-4 rounded-lg hover:bg-card-glass/50 transition-colors fade-in"
+                    className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-lg hover:bg-card-glass/50 transition-colors fade-in"
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    <div className="flex items-center space-x-4">
-                      <div className={`p-2 rounded-lg ${
+                    {/* Left Section */}
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
+                      <div className={`p-2 rounded-lg flex-shrink-0 ${
                         tx.type === 'send' ? 'bg-warning/20 text-warning' :
                         tx.type === 'receive' ? 'bg-success/20 text-success' :
                         tx.type === 'swap' ? 'bg-accent/20 text-accent' :
@@ -211,34 +216,32 @@ const Transactions = () => {
                         <Icon className="w-5 h-5" />
                       </div>
                       
-                      <div className="min-w-0">
-                        <div className="flex items-center space-x-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
                           <p className="font-medium capitalize">{tx.type}</p>
                           <Badge className={getStatusColor(tx.status)}>
                             {tx.status}
                           </Badge>
                         </div>
-                        <div className="flex items-center space-x-2 mt-1">
+                        <div className="space-y-1">
                           <p className="text-sm text-foreground-muted">
                             {new Date(tx.timestamp).toLocaleDateString()} • {new Date(tx.timestamp).toLocaleTimeString()}
                           </p>
                           {(tx.recipient || tx.sender) && (
-                            <>
-                              <span className="text-foreground-subtle">•</span>
-                              <p className="text-sm text-foreground-muted truncate">
-                                {tx.type === 'send' ? `To: ${tx.recipient}` : 
-                                 tx.type === 'receive' ? `From: ${tx.sender}` :
-                                 tx.type === 'swap' ? `${tx.fromCurrency} → ${tx.toCurrency}` :
-                                 `Batch: ${tx.batchSize} employees`}
-                              </p>
-                            </>
+                            <p className="text-sm text-foreground-muted truncate">
+                              {tx.type === 'send' ? `To: ${tx.recipient}` : 
+                               tx.type === 'receive' ? `From: ${tx.sender}` :
+                               tx.type === 'swap' ? `${tx.fromCurrency} → ${tx.toCurrency}` :
+                               `Batch: ${tx.batchSize} employees`}
+                            </p>
                           )}
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
+                    {/* Right Section */}
+                    <div className="flex items-center justify-between sm:justify-end gap-3">
+                      <div className="text-left sm:text-right">
                         <p className="font-semibold">
                           {tx.type === 'receive' ? '+' : '-'}${tx.amount.toLocaleString()}
                         </p>
@@ -251,6 +254,7 @@ const Transactions = () => {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => window.open(`https://explorer.aptoslabs.com/txn/${tx.txHash}`, '_blank')}
+                        className="flex-shrink-0"
                       >
                         <ExternalLink className="w-4 h-4" />
                       </Button>
@@ -263,12 +267,12 @@ const Transactions = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between pt-4 border-t border-border-subtle">
-              <p className="text-sm text-foreground-muted">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-border-subtle">
+              <p className="text-sm text-foreground-muted order-2 sm:order-1">
                 Page {currentPage} of {totalPages}
               </p>
               
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 order-1 sm:order-2">
                 <Button
                   variant="outline"
                   size="sm"

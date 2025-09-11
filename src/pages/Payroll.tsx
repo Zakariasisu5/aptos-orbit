@@ -140,16 +140,17 @@ const Payroll = () => {
         </Card>
 
         {/* Actions */}
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-col sm:flex-row gap-3">
           <Button 
             variant="accent" 
             onClick={() => setShowAdd(true)}
+            className="flex-1 sm:flex-none"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Employee
           </Button>
           
-          <Button variant="outline">
+          <Button variant="outline" className="flex-1 sm:flex-none">
             <Upload className="w-4 h-4 mr-2" />
             Import CSV
           </Button>
@@ -177,23 +178,23 @@ const Payroll = () => {
                 {employees.map((employee, index) => (
                   <div 
                     key={employee.id}
-                    className="flex items-center justify-between p-4 rounded-lg bg-card-glass/30 hover:bg-card-glass/50 transition-colors"
+                    className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-lg bg-card-glass/30 hover:bg-card-glass/50 transition-colors"
                   >
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-gradient-accent rounded-full flex items-center justify-center">
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
+                      <div className="w-10 h-10 bg-gradient-accent rounded-full flex items-center justify-center flex-shrink-0">
                         <User className="w-5 h-5 text-white" />
                       </div>
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <p className="font-medium">{employee.name}</p>
                         <p className="text-sm text-foreground-muted">{employee.email}</p>
-                        <p className="text-xs text-foreground-subtle font-mono">
+                        <p className="text-xs text-foreground-subtle font-mono truncate">
                           {employee.wallet}
                         </p>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
+                    <div className="flex items-center justify-between sm:justify-end gap-3">
+                      <div className="text-left sm:text-right">
                         <p className="font-semibold">${employee.amount.toLocaleString()}</p>
                         <p className="text-sm text-foreground-muted">{employee.currency}</p>
                       </div>
@@ -202,7 +203,7 @@ const Payroll = () => {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => removeEmployee(employee.id)}
-                        className="text-destructive hover:text-destructive"
+                        className="text-destructive hover:text-destructive flex-shrink-0"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -227,7 +228,7 @@ const Payroll = () => {
               ].map((batch, index) => (
                 <div 
                   key={index}
-                  className="flex items-center justify-between p-3 rounded-lg bg-card-glass/30"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-card-glass/30"
                 >
                   <div>
                     <p className="font-medium">{batch.date}</p>
@@ -235,7 +236,7 @@ const Payroll = () => {
                       {batch.employees} employees
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-left sm:text-right">
                     <p className="font-semibold">${batch.amount.toLocaleString()}</p>
                     <p className="text-sm text-success capitalize">{batch.status}</p>
                   </div>
@@ -254,7 +255,7 @@ const Payroll = () => {
           </DialogHeader>
           
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -286,7 +287,7 @@ const Payroll = () => {
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="amount">Amount</Label>
                 <Input
@@ -317,7 +318,7 @@ const Payroll = () => {
               </div>
             </div>
             
-            <div className="flex space-x-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <Button 
                 variant="outline" 
                 className="flex-1"
@@ -390,7 +391,7 @@ const Payroll = () => {
                 </div>
               </div>
               
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button 
                   variant="outline" 
                   className="flex-1"
