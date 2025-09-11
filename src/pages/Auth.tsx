@@ -8,7 +8,6 @@ import { Wallet, Mail, Lock, Github, Chrome } from 'lucide-react';
 import BackgroundBubbles from '@/components/animations/BackgroundBubbles';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import WalletConnect from '@/components/wallet/WalletConnect';
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -192,11 +191,6 @@ const Auth = () => {
               </div>
             </div>
           </Card>
-
-          {/* Wallet Connect */}
-          <div className="slide-up" style={{ animationDelay: '0.2s' }}>
-            <WalletConnect />
-          </div>
 
         </div>
       </div>

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
+import WalletButton from '@/components/wallet/WalletButton';
 
 const Navbar = () => {
   const location = useLocation();
@@ -76,6 +77,8 @@ const Navbar = () => {
 
           {/* Actions */}
           <div className="hidden md:flex items-center space-x-4">
+            <WalletButton />
+            
             <Button
               variant="ghost"
               size="icon"
