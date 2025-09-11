@@ -65,9 +65,10 @@ const WalletButton = () => {
     return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="sm" className="hidden sm:flex">
+          <Button variant="outline" size="sm" className="flex">
             <Wallet className="w-4 h-4 mr-2" />
-            {address.slice(0, 6)}...{address.slice(-4)}
+            <span className="hidden sm:inline">{address.slice(0, 6)}...{address.slice(-4)}</span>
+            <span className="sm:hidden">Connected</span>
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
@@ -97,9 +98,10 @@ const WalletButton = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="hidden sm:flex">
+        <Button variant="outline" size="sm" className="flex">
           <Wallet className="w-4 h-4 mr-2" />
-          Connect Wallet
+          <span className="hidden sm:inline">Connect Wallet</span>
+          <span className="sm:hidden">Connect</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

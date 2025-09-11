@@ -224,19 +224,59 @@ const ForexSwap = () => {
           </div>
         </Card>
 
-        {/* Rate Chart Placeholder */}
+        {/* Rate Chart */}
         <Card variant="glass" className="slide-up" style={{ animationDelay: '0.1s' }}>
           <div className="space-y-4">
             <h3 className="text-xl font-semibold">Price Chart</h3>
-            <div className="h-64 bg-gradient-surface rounded-lg flex items-center justify-center border border-border-subtle">
-              <div className="text-center space-y-2">
-                <TrendingUp className="w-12 h-12 text-foreground-muted mx-auto" />
-                <p className="text-foreground-muted">
-                  {fromCurrency}/{toCurrency} Price Chart
-                </p>
-                <p className="text-sm text-foreground-subtle">
-                  Real-time rate visualization
-                </p>
+            <div className="h-64 bg-gradient-surface rounded-lg p-4 border border-border-subtle">
+              {/* Simulated Chart with SVG */}
+              <div className="w-full h-full relative">
+                <svg className="w-full h-full" viewBox="0 0 400 200">
+                  <defs>
+                    <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="hsl(var(--accent))" stopOpacity="0.8"/>
+                      <stop offset="100%" stopColor="hsl(var(--accent))" stopOpacity="0.1"/>
+                    </linearGradient>
+                  </defs>
+                  
+                  {/* Grid lines */}
+                  {[0, 1, 2, 3, 4].map(i => (
+                    <line key={i} x1="0" y1={i * 40} x2="400" y2={i * 40} stroke="hsl(var(--border))" strokeWidth="1" opacity="0.3"/>
+                  ))}
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                    <line key={i} x1={i * 50} y1="0" x2={i * 50} y2="200" stroke="hsl(var(--border))" strokeWidth="1" opacity="0.3"/>
+                  ))}
+                  
+                  {/* Price line */}
+                  <polyline
+                    fill="none"
+                    stroke="hsl(var(--accent))"
+                    strokeWidth="2"
+                    points="0,120 50,100 100,110 150,95 200,105 250,90 300,85 350,95 400,80"
+                  />
+                  
+                  {/* Area under curve */}
+                  <polygon
+                    fill="url(#chartGradient)"
+                    points="0,120 50,100 100,110 150,95 200,105 250,90 300,85 350,95 400,80 400,200 0,200"
+                  />
+                  
+                  {/* Data points */}
+                  {[
+                    [0, 120], [50, 100], [100, 110], [150, 95], [200, 105], 
+                    [250, 90], [300, 85], [350, 95], [400, 80]
+                  ].map(([x, y], i) => (
+                    <circle key={i} cx={x} cy={y} r="3" fill="hsl(var(--accent))" />
+                  ))}
+                </svg>
+                
+                {/* Chart labels */}
+                <div className="absolute bottom-2 left-2 text-xs text-foreground-muted">
+                  {exchangeRate.toFixed(4)} {toCurrency}
+                </div>
+                <div className="absolute top-2 right-2 text-xs text-success">
+                  +{rateData.change24h}% (24h)
+                </div>
               </div>
             </div>
           </div>

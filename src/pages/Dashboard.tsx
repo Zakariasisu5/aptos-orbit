@@ -54,13 +54,13 @@ const Dashboard = () => {
 
   return (
     <div className="container mx-auto px-6 py-8 space-y-8">
-      {/* Welcome Header */}
+      {/* Dashboard Header */}
       <div className="fade-in">
         <h1 className="text-3xl font-bold font-display mb-2">
-          Welcome back, {mockUser.name}
+          Financial Dashboard
         </h1>
         <p className="text-foreground-muted">
-          Here's what's happening with your finances today.
+          Manage your global finances with real-time insights and secure transactions.
         </p>
       </div>
 
