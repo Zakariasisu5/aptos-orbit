@@ -84,14 +84,20 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: `${window.location.origin}/dashboard`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         }
       });
       if (error) throw error;
+      
+      // Don't show success toast here as user will be redirected
     } catch (error: any) {
       toast({
         title: "Authentication Failed",
-        description: error.message,
+        description: error.message || `Failed to authenticate with ${provider}`,
         variant: "destructive",
       });
       setLoading(false);
