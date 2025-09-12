@@ -3,7 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
-import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import SendMoney from "./pages/SendMoney";
 import ReceiveMoney from "./pages/ReceiveMoney";
@@ -13,7 +12,6 @@ import Treasury from "./pages/Treasury";
 import Transactions from "./pages/Transactions";
 import Navbar from "./components/layout/Navbar";
 import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -25,62 +23,47 @@ const App = () => (
       <div className="min-h-screen bg-background">
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <div>
-                <Navbar />
-                <Dashboard />
-              </div>
-            </ProtectedRoute>
+            <div>
+              <Navbar />
+              <Dashboard />
+            </div>
           } />
           <Route path="/send" element={
-            <ProtectedRoute>
-              <div>
-                <Navbar />
-                <SendMoney />
-              </div>
-            </ProtectedRoute>
+            <div>
+              <Navbar />
+              <SendMoney />
+            </div>
           } />
           <Route path="/receive" element={
-            <ProtectedRoute>
-              <div>
-                <Navbar />
-                <ReceiveMoney />
-              </div>
-            </ProtectedRoute>
+            <div>
+              <Navbar />
+              <ReceiveMoney />
+            </div>
           } />
           <Route path="/forex" element={
-            <ProtectedRoute>
-              <div>
-                <Navbar />
-                <ForexSwap />
-              </div>
-            </ProtectedRoute>
+            <div>
+              <Navbar />
+              <ForexSwap />
+            </div>
           } />
           <Route path="/payroll" element={
-            <ProtectedRoute>
-              <div>
-                <Navbar />
-                <Payroll />
-              </div>
-            </ProtectedRoute>
+            <div>
+              <Navbar />
+              <Payroll />
+            </div>
           } />
           <Route path="/treasury" element={
-            <ProtectedRoute>
-              <div>
-                <Navbar />
-                <Treasury />
-              </div>
-            </ProtectedRoute>
+            <div>
+              <Navbar />
+              <Treasury />
+            </div>
           } />
           <Route path="/transactions" element={
-            <ProtectedRoute>
-              <div>
-                <Navbar />
-                <Transactions />
-              </div>
-            </ProtectedRoute>
+            <div>
+              <Navbar />
+              <Transactions />
+            </div>
           } />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,36 +1,15 @@
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Wallet, Menu, X, LogOut, Sun, Moon } from 'lucide-react';
+import { Wallet, Menu, X, Sun, Moon } from 'lucide-react';
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
 import WalletButton from '@/components/wallet/WalletButton';
 
 const Navbar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { toast } = useToast();
   const { setTheme, theme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast({
-        title: "Logged out successfully",
-        description: "You have been logged out of your account",
-      });
-      navigate('/auth');
-    } catch (error: any) {
-      toast({
-        title: "Logout failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
   
   const navigation = [
     { name: 'Dashboard', href: '/dashboard' },
@@ -87,15 +66,6 @@ const Navbar = () => {
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleLogout}
-              className="text-foreground-muted hover:text-foreground"
-            >
-              <LogOut className="h-5 w-5" />
-            </Button>
           </div>
 
           {/* Mobile Actions */}
@@ -138,10 +108,6 @@ const Navbar = () => {
                 >
                   {theme === 'dark' ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
                   Theme
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleLogout} className="flex-1">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
                 </Button>
               </div>
             </div>
