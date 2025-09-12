@@ -37,17 +37,22 @@ const Landing = () => {
       title: 'Treasury Analytics',
       description: 'Advanced portfolio management with real-time insights.',
     },
-    {
-      icon: Shield,
-      title: 'Bank-Grade Security',
-      description: 'Multi-signature wallets and enterprise-level security protocols.',
-    },
-    {
-      icon: Zap,
-      title: 'Lightning Fast',
-      description: 'Built on Aptos for sub-second transaction finality.',
-    },
   ];
+
+  const handleStartFreeTrial = () => {
+    // Navigate to dashboard to start the trial
+    window.location.href = '/dashboard';
+  };
+
+  const handleContactSales = () => {
+    // Open email client with pre-filled email
+    window.location.href = 'mailto:sales@globepayx.com?subject=Sales Inquiry&body=Hi GlobePayX team,%0D%0A%0D%0AI am interested in learning more about your platform and would like to discuss our business requirements.%0D%0A%0D%0AThank you!';
+  };
+
+  const handleWatchDemo = () => {
+    // Open demo video in new tab (placeholder URL)
+    window.open('https://youtu.be/demo-video', '_blank');
+  };
 
   const stats = [
     { label: 'Total Volume', value: '$2.4B+' },
@@ -82,7 +87,7 @@ const Landing = () => {
                 Get Started
               </Link>
             </Button>
-            <Button variant="outline" size="xl" className="min-w-[200px]">
+            <Button variant="outline" size="xl" className="min-w-[200px]" onClick={handleWatchDemo}>
               Watch Demo
             </Button>
           </div>
@@ -221,11 +226,11 @@ const Landing = () => {
             Join thousands of businesses already using GlobePayX for their global financial needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="accent" size="lg">
+            <Button variant="accent" size="lg" onClick={handleStartFreeTrial}>
               <CheckCircle className="w-5 h-5 mr-2" />
               Start Free Trial
             </Button>
-            <Button variant="outline" size="lg">
+            <Button variant="outline" size="lg" onClick={handleContactSales}>
               Contact Sales
             </Button>
           </div>
