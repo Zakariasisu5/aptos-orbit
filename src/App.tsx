@@ -12,6 +12,7 @@ import Treasury from "./pages/Treasury";
 import Transactions from "./pages/Transactions";
 import Navbar from "./components/layout/Navbar";
 import NotFound from "./pages/NotFound";
+import ChatWidget from "./components/chat/ChatWidget";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
     <Sonner />
     <BrowserRouter>
       <div className="min-h-screen bg-background">
+        <ChatWidget />
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/dashboard" element={

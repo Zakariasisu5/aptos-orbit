@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+// Animation imports replaced with CSS animations for better performance
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -123,34 +123,21 @@ const ChatWidget: React.FC = () => {
   return (
     <>
       {/* Floating Chat Button */}
-      <AnimatePresence>
-        {!isOpen && (
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-6 z-50"
+      {!isOpen && (
+        <div className="fixed bottom-6 right-6 z-50 animate-scale-in">
+          <Button
+            onClick={toggleChat}
+            className="w-14 h-14 rounded-full glass-card shadow-glow hover:shadow-elevated transition-all duration-300 border-accent/20 bg-gradient-primary hover-scale"
           >
-            <Button
-              onClick={toggleChat}
-              className="w-14 h-14 rounded-full glass-card shadow-glow hover:shadow-elevated transition-all duration-300 border-accent/20 bg-gradient-primary"
-            >
-              <MessageCircle className="w-6 h-6 text-primary-foreground" />
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <MessageCircle className="w-6 h-6 text-primary-foreground" />
+          </Button>
+        </div>
+      )}
 
       {/* Chat Panel */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)]"
-          >
-            <div className="glass-card-elevated bg-card-glass/95 backdrop-blur-xl border-accent/20 rounded-2xl overflow-hidden">
+      {isOpen && (
+        <div className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] animate-fade-in">
+          <div className="glass-card-elevated bg-card-glass/95 backdrop-blur-xl border-accent/20 rounded-2xl overflow-hidden">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-gradient-primary/10">
                 <div className="flex items-center space-x-2">
@@ -270,22 +257,17 @@ const ChatWidget: React.FC = () => {
                     </div>
                     
                     {isListening && (
-                      <motion.p
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-xs text-accent mt-2 flex items-center"
-                      >
+                      <p className="text-xs text-accent mt-2 flex items-center animate-fade-in">
                         <div className="w-2 h-2 rounded-full bg-accent animate-pulse mr-2" />
                         Listening... Speak now
-                      </motion.p>
+                      </p>
                     )}
                   </div>
                 </>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </>
   );
 };

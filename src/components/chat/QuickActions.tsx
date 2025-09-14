@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useChatStore } from '@/store/chatStore';
@@ -20,11 +19,10 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
       <ScrollArea className="w-full">
         <div className="flex gap-2 pb-2">
           {quickActions.map((action, index) => (
-            <motion.div
+            <div
               key={action.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
+              className="animate-fade-in"
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               <Button
                 variant="outline"
@@ -41,7 +39,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
                 <span className="mr-1">{action.icon}</span>
                 {action.label}
               </Button>
-            </motion.div>
+            </div>
           ))}
         </div>
       </ScrollArea>
