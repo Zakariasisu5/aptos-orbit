@@ -66,10 +66,28 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           <div className={`text-xs text-foreground-subtle mt-1 px-2 ${
             isUser ? 'text-right' : 'text-left'
           }`}>
-            {message.timestamp.toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit' 
-            })}
+            {(() => {
+              try {
+                const ts = message.timestamp as unknown;
+                // Normalize possible timestamp shapes to a Date.
+                let date: Date | null = null;
+
+                if (ts instanceof Date) {
+                  date = ts;
+                } else if (typeof ts === 'string' || typeof ts === 'number') {
+                  // Some storage layers serialize dates to ISO strings or epoch numbers.
+                  const coerced = new Date(ts as any);
+                  if (!Number.isNaN(coerced.getTime())) date = coerced;
+                }
+
+                if (!date) return '';
+
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              } catch (e) {
+                // Fail silently and show nothing if formatting fails
+                return '';
+              }
+            })()}
           </div>
         )}
       </div>

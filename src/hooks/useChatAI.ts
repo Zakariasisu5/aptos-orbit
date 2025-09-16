@@ -57,14 +57,40 @@ export const useChatAI = () => {
     try {
       const appContext = getAppContext();
       
-      const { data, error } = await supabase.functions.invoke('chat-ai', {
-        body: {
-          message: userMessage,
-          context: appContext,
-        },
-      });
+      let data: any = null;
+      try {
+        const res = await supabase.functions.invoke('chat-ai', {
+          body: JSON.stringify({
+            message: userMessage,
+            context: appContext,
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        });
 
-      if (error) throw error;
+        // The Supabase Functions client returns { data, error } or throws; normalize
+        if (res.error) {
+          // include status and message where available
+          console.error('Supabase function error object:', res.error);
+          throw res.error;
+        }
+
+        data = res.data;
+      } catch (errAny) {
+        // If it's a FunctionsHttpError, it may include status and body
+        console.error('Error invoking chat-ai function:', errAny);
+        // Try to provide more detail if available
+        if (errAny && errAny.status) {
+          console.error('Function status:', errAny.status);
+        }
+        if (errAny && errAny.body) {
+          try {
+            console.error('Function body:', JSON.stringify(JSON.parse(errAny.body), null, 2));
+          } catch {
+            console.error('Function body (raw):', errAny.body);
+          }
+        }
+        throw errAny;
+      }
 
       // Add AI response
       addMessage({
@@ -79,17 +105,18 @@ export const useChatAI = () => {
 
     } catch (error) {
       console.error('Chat AI error:', error);
-      
+
       // Fallback response
       addMessage({
         type: 'assistant',
         content: getErrorResponse(userMessage),
       });
 
+      // More informative toast
       toast({
-        title: "Connection Issue",
-        description: "I'm having trouble connecting to my AI brain. Trying with local knowledge...",
-        variant: "default",
+        title: "AI Service Unavailable",
+        description: "Chat AI is currently unavailable. Check function logs or your OpenAI key. The message has been handled locally.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -105,15 +132,10 @@ export const useChatAI = () => {
       case 'open_receive_money':
         window.location.href = '/receive';
         break;
-      case 'open_forex':
-        window.location.href = '/forex';
-        break;
       case 'open_payroll':
         window.location.href = '/payroll';
         break;
-      case 'open_treasury':
-        window.location.href = '/treasury';
-        break;
+      // forex and treasury navigation removed
       case 'open_transactions':
         window.location.href = '/transactions';
         break;
@@ -135,7 +157,7 @@ export const useChatAI = () => {
     }
     
     if (message.includes('rate') || message.includes('exchange') || message.includes('fx')) {
-      return "You can check current exchange rates on the Forex page. GlobePayX provides real-time rates for major currency pairs.";
+      return "Currently exchange rate features are unavailable. I can still provide guidance on conversions and expected behavior.";
     }
     
     if (message.includes('payroll')) {

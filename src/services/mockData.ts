@@ -56,9 +56,11 @@ export const mockTransactions = [
   },
 ];
 
+// FX rates removed
+
+// Minimal FX rates kept for UI/hooks compatibility
 export const mockFXRates = {
   'APT/USDC': { rate: 7.85, change24h: 2.3, trend: 'up' as const },
-  'WETH/USDC': { rate: 1996.50, change24h: -1.2, trend: 'down' as const },
   'USDT/USDC': { rate: 1.0001, change24h: 0.01, trend: 'stable' as const },
 };
 
@@ -123,7 +125,7 @@ export const mockTestimonials = [
     name: 'Aisha Patel',
     role: 'Finance Director at GlobalTech',
     avatar: '👩‍💼',
-    content: 'Real-time treasury management with blockchain transparency - exactly what we needed.',
+    content: 'The platform helped streamline our cross-border payroll and financial operations.',
   },
   {
     id: '4',
@@ -141,20 +143,7 @@ export const mockTestimonials = [
   },
 ];
 
-export const mockTreasuryData = {
-  totalValue: 28570.46,
-  allocation: [
-    { currency: 'USDC', amount: 12543.67, percentage: 43.9 },
-    { currency: 'USDT', amount: 8901.23, percentage: 31.2 },
-    { currency: 'WETH', amount: 4890.00, percentage: 17.1 },
-    { currency: 'APT', amount: 1234.56, percentage: 4.3 },
-    { currency: 'Other', amount: 1001.00, percentage: 3.5 },
-  ],
-  history: Array.from({ length: 30 }, (_, i) => ({
-    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    value: 28570.46 + (Math.random() - 0.5) * 2000,
-  })).reverse(),
-};
+// Treasury data removed
 
 export const mockUser = {
   id: '1',

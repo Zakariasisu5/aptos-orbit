@@ -34,8 +34,8 @@ const Landing = () => {
     },
     {
       icon: TrendingUp,
-      title: 'Treasury Analytics',
-      description: 'Advanced portfolio management with real-time insights.',
+      title: 'Analytics',
+      description: 'Advanced financial insights and reporting.',
     },
   ];
 
@@ -75,8 +75,7 @@ const Landing = () => {
               <span className="text-gradient">Cross-Border Finance</span>
             </h1>
             <p className="text-xl text-foreground-muted mb-12 max-w-2xl mx-auto leading-relaxed">
-              Send money globally, manage payroll, and optimize treasury operations with 
-              our next-generation Web3 financial platform built on Aptos blockchain.
+              Send money globally and manage payroll with our next-generation Web3 financial platform built on Aptos blockchain.
             </p>
           </div>
           

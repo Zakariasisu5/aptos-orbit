@@ -6,9 +6,7 @@ import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import SendMoney from "./pages/SendMoney";
 import ReceiveMoney from "./pages/ReceiveMoney";
-import ForexSwap from "./pages/ForexSwap";
 import Payroll from "./pages/Payroll";
-import Treasury from "./pages/Treasury";
 import Transactions from "./pages/Transactions";
 import Navbar from "./components/layout/Navbar";
 import NotFound from "./pages/NotFound";
@@ -43,22 +41,10 @@ const App = () => (
               <ReceiveMoney />
             </div>
           } />
-          <Route path="/forex" element={
-            <div>
-              <Navbar />
-              <ForexSwap />
-            </div>
-          } />
           <Route path="/payroll" element={
             <div>
               <Navbar />
               <Payroll />
-            </div>
-          } />
-          <Route path="/treasury" element={
-            <div>
-              <Navbar />
-              <Treasury />
             </div>
           } />
           <Route path="/transactions" element={

@@ -5,7 +5,8 @@ export interface ChatMessage {
   id: string;
   type: 'user' | 'assistant' | 'system';
   content: string;
-  timestamp: Date;
+  // persisted state may serialize Dates to strings, so allow multiple types here
+  timestamp: Date | string | number;
   isTyping?: boolean;
 }
 
@@ -51,12 +52,7 @@ const defaultQuickActions: QuickAction[] = [
     icon: '💸',
     prompt: 'I want to send money to someone'
   },
-  {
-    id: 'check-rates',
-    label: 'FX Rates',
-    icon: '📈',
-    prompt: 'Show me current exchange rates'
-  },
+  
   {
     id: 'payroll-help',
     label: 'Payroll Help',
@@ -69,12 +65,7 @@ const defaultQuickActions: QuickAction[] = [
     icon: '📋',
     prompt: 'Show me my recent transactions'
   },
-  {
-    id: 'treasury-insights',
-    label: 'Treasury',
-    icon: '🏦',
-    prompt: 'What are my treasury insights this week?'
-  }
+  
 ];
 
 export const useChatStore = create<ChatStore>()(
@@ -85,7 +76,7 @@ export const useChatStore = create<ChatStore>()(
         {
           id: '1',
           type: 'assistant',
-          content: 'Hey there! 👋 I\'m your GlobePayX assistant. I can help you with wallet connections, sending money, checking FX rates, payroll, and much more. What can I help you with today?',
+          content: 'Hey there! 👋 I\'m your GlobePayX assistant. I can help you with wallet connections, sending money, payroll, and much more. What can I help you with today?',
           timestamp: new Date(),
         }
       ],

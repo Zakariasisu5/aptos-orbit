@@ -15,9 +15,7 @@ const Navbar = () => {
     { name: 'Dashboard', href: '/dashboard' },
     { name: 'Send', href: '/send' },
     { name: 'Receive', href: '/receive' },
-    { name: 'FOREX', href: '/forex' },
     { name: 'Payroll', href: '/payroll' },
-    { name: 'Treasury', href: '/treasury' },
     { name: 'History', href: '/transactions' },
   ];
 

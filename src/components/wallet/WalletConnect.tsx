@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/GlassCard';
 import { Wallet } from 'lucide-react';
 import { useWalletStore } from '@/store/walletStore';
 import { useToast } from '@/hooks/use-toast';
+import { isWalletAvailable } from '@/lib/walletUtils';
 
 const walletOptions = [
   {
@@ -34,6 +35,14 @@ const WalletConnect = () => {
   const handleConnect = async (walletType: 'petra' | 'martian' | 'pontem') => {
     setConnecting(walletType);
     try {
+      if (!isWalletAvailable(walletType)) {
+        toast({
+          title: 'Wallet Not Found',
+          description: `Could not find the ${walletType} wallet extension in your browser. Please install it or choose a different wallet.`,
+          variant: 'destructive',
+        });
+        return;
+      }
       await connect(walletType);
       toast({
         title: "Wallet Connected",
