@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useWalletStore } from '@/store/walletStore';
+import { buildBatchPayPayload } from '@/integrations/aptos/tx';
 import { mockPayrollData } from '@/services/mockData';
 
 export interface PayrollEmployee {
@@ -25,6 +27,7 @@ export const usePayroll = () => {
   const [batches, setBatches] = useState<PayrollBatch[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { address, signAndSubmit } = useWalletStore();
 
   const addEmployee = (employee: Omit<PayrollEmployee, 'id'>) => {
     const newEmployee: PayrollEmployee = {
@@ -46,37 +49,29 @@ export const usePayroll = () => {
     );
   };
 
-  const processBatch = async (employeeList: PayrollEmployee[]): Promise<PayrollBatch> => {
+  // On-chain payroll batch processing
+  const processBatchOnchain = async (employeeList: PayrollEmployee[], memo = 'Payroll batch') => {
     setIsLoading(true);
     setError(null);
-    
     try {
+      if (!address || !signAndSubmit) throw new Error('Wallet not connected');
+      const recipients = employeeList.map(emp => emp.wallet);
+      const amounts = employeeList.map(emp => emp.amount);
+      // TODO: support multiple coin types if needed
+      const payload = buildBatchPayPayload(address, recipients, amounts, memo);
+      const txResult = await signAndSubmit(payload);
       const batch: PayrollBatch = {
         id: Date.now().toString(),
         employees: employeeList,
         totalAmount: employeeList.reduce((sum, emp) => sum + emp.amount, 0),
-        status: 'processing',
-        createdAt: new Date().toISOString(),
-      };
-      
-      setBatches(prev => [batch, ...prev]);
-      
-      // Simulate processing
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      const completedBatch: PayrollBatch = {
-        ...batch,
         status: 'completed',
+        createdAt: new Date().toISOString(),
         processedAt: new Date().toISOString(),
       };
-      
-      setBatches(prev => 
-        prev.map(b => b.id === batch.id ? completedBatch : b)
-      );
-      
-      return completedBatch;
-    } catch (err) {
-      setError('Failed to process payroll batch');
+      setBatches(prev => [batch, ...prev]);
+      return batch;
+    } catch (err: any) {
+      setError('Failed to process payroll batch: ' + (err?.message || 'Unknown error'));
       throw err;
     } finally {
       setIsLoading(false);
@@ -138,7 +133,7 @@ export const usePayroll = () => {
     addEmployee,
     removeEmployee,
     updateEmployee,
-    processBatch,
+    processBatchOnchain,
     importFromCSV,
   };
 };

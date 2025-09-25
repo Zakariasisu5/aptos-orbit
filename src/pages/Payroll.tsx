@@ -19,6 +19,8 @@ interface Employee {
   currency: string;
 }
 
+import { usePayroll } from '@/hooks/usePayroll';
+
 const Payroll = () => {
   const { toast } = useToast();
   const [employees, setEmployees] = useState<Employee[]>(mockPayrollData);
@@ -27,28 +29,16 @@ const Payroll = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
   const [isSuccess, setIsSuccess] = useState(false);
-
-  const [newEmployee, setNewEmployee] = useState({
-    name: '',
-    email: '',
-    wallet: '',
-    amount: '',
-    currency: 'USDC'
-  });
-
+  const [newEmployee, setNewEmployee] = useState({ name: '', email: '', wallet: '', amount: '', currency: 'USDC' });
   const totalAmount = employees.reduce((sum, emp) => sum + emp.amount, 0);
   const currencies = ['USDC', 'EURC', 'GHS-stable', 'USDT'];
+  const { processBatchOnchain } = usePayroll();
 
   const addEmployee = () => {
     if (!newEmployee.name || !newEmployee.email || !newEmployee.amount) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
+      toast({ title: "Missing Information", description: "Please fill in all required fields", variant: "destructive" });
       return;
     }
-
     const employee: Employee = {
       id: Date.now().toString(),
       name: newEmployee.name,
@@ -57,42 +47,34 @@ const Payroll = () => {
       amount: parseFloat(newEmployee.amount),
       currency: newEmployee.currency,
     };
-
     setEmployees([...employees, employee]);
     setNewEmployee({ name: '', email: '', wallet: '', amount: '', currency: 'USDC' });
     setShowAdd(false);
-    
-    toast({
-      title: "Employee Added",
-      description: `${employee.name} has been added to payroll`,
-    });
+    toast({ title: "Employee Added", description: `${employee.name} has been added to payroll` });
   };
 
   const removeEmployee = (id: string) => {
     setEmployees(employees.filter(emp => emp.id !== id));
   };
 
+  // On-chain payroll processing
   const processPayroll = async () => {
     setIsProcessing(true);
     setProcessingProgress(0);
-
-    // Simulate batch processing
-    for (let i = 0; i <= employees.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      setProcessingProgress((i / employees.length) * 100);
+    try {
+      await processBatchOnchain(employees);
+      setProcessingProgress(100);
+      setIsProcessing(false);
+      setIsSuccess(true);
+      setTimeout(() => {
+        setShowConfirm(false);
+        setIsSuccess(false);
+        toast({ title: "Payroll Complete", description: `Successfully sent payments to ${employees.length} employees` });
+      }, 2000);
+    } catch (err: any) {
+      setIsProcessing(false);
+      toast({ title: "Payroll Failed", description: err?.message || 'Unknown error', variant: 'destructive' });
     }
-
-    setIsProcessing(false);
-    setIsSuccess(true);
-
-    setTimeout(() => {
-      setShowConfirm(false);
-      setIsSuccess(false);
-      toast({
-        title: "Payroll Complete",
-        description: `Successfully sent payments to ${employees.length} employees`,
-      });
-    }, 2000);
   };
 
   return (
