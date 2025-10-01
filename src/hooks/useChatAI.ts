@@ -114,11 +114,9 @@ export const useChatAI = () => {
 
       // More informative toast
       toast({
-        /*
         title: "AI Service Unavailable",
         description: "Chat AI is currently unavailable. Check function logs or your OpenAI key. The message has been handled locally.",
         variant: "destructive",
-        */
       });
     } finally {
       setIsLoading(false);
