@@ -1,5 +1,5 @@
-// Mock data removed - now using live Aptos blockchain data
-// Only keeping UI-only mock data (sponsors, testimonials, etc.)
+// Mock data removed - now using live Aptos blockchain data via hooks
+// Only keeping UI-only mock data (sponsors, testimonials, user profile)
 
 export const mockSponsors = [
   { name: 'Aptos Foundation', logo: '🚀', description: 'Layer 1 Blockchain' },
