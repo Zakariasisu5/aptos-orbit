@@ -70,38 +70,78 @@ export const getUserBalances = async (address: string) => {
   }
 };
 
-// Fetch transaction history from Audit.move events
+// Store transaction locally for history tracking
+const storeTransaction = (address: string, transaction: any) => {
+  try {
+    const key = `transactions_${address}`;
+    const stored = localStorage.getItem(key);
+    const transactions = stored ? JSON.parse(stored) : [];
+    transactions.unshift(transaction);
+    // Keep last 100 transactions
+    if (transactions.length > 100) transactions.splice(100);
+    localStorage.setItem(key, JSON.stringify(transactions));
+  } catch (error) {
+    console.error('Error storing transaction:', error);
+  }
+};
+
+// Fetch transaction history from Audit.move events + local storage
 export const getTransactionHistory = async (address: string) => {
   try {
-    // Note: This uses a placeholder implementation as the actual Aptos SDK method 
-    // may differ depending on your contract implementation
-    // You'll need to replace this with the actual contract query once deployed
-    
-    // For now, return empty array until contracts are deployed
-    // Replace with actual event fetching once contracts are live
-    return [];
-    
-    /* Example implementation (uncomment when contracts are deployed):
-    const events = await aptos.getAccountTransactions({
+    // Fetch on-chain transactions
+    const onChainTxs = await aptos.getAccountTransactions({
       accountAddress: address,
+      options: { limit: 50 }
     });
     
-    return events.map((event: any) => ({
-      id: event.version.toString(),
-      type: event.payload?.function?.split('::').pop() || 'unknown',
-      amount: formatBalance(event.payload?.arguments?.[1] || 0, 'USDC'),
-      currency: 'USDC',
-      recipient: event.payload?.arguments?.[0],
-      sender: address,
-      status: event.success ? 'completed' : 'failed',
-      timestamp: new Date(Number(event.timestamp) / 1000).toISOString(),
-      txHash: event.hash,
-      fee: formatBalance(event.gas_used || 0, 'APT'),
-    }));
-    */
+    const parsedTxs = onChainTxs.map((tx: any) => {
+      const functionName = tx.payload?.function || '';
+      let type: 'send' | 'receive' | 'swap' | 'payroll' = 'send';
+      
+      if (functionName.includes('batch_send')) {
+        type = 'payroll';
+      } else if (functionName.includes('swap')) {
+        type = 'swap';
+      } else if (tx.sender !== address) {
+        type = 'receive';
+      }
+      
+      return {
+        id: tx.version?.toString() || tx.hash,
+        type,
+        amount: formatBalance(tx.payload?.arguments?.[1] || 0, 'USDC'),
+        currency: 'USDC',
+        recipient: tx.payload?.arguments?.[0],
+        sender: tx.sender,
+        status: tx.success ? 'completed' : 'failed',
+        timestamp: new Date(Number(tx.timestamp) / 1000).toISOString(),
+        txHash: tx.hash,
+        fee: formatBalance(tx.gas_used || 0, 'APT'),
+      };
+    });
+    
+    // Fetch local transactions
+    const key = `transactions_${address}`;
+    const stored = localStorage.getItem(key);
+    const localTxs = stored ? JSON.parse(stored) : [];
+    
+    // Merge and deduplicate (on-chain takes precedence)
+    const txMap = new Map();
+    [...parsedTxs, ...localTxs].forEach(tx => {
+      if (!txMap.has(tx.txHash) && !txMap.has(tx.id)) {
+        txMap.set(tx.txHash || tx.id, tx);
+      }
+    });
+    
+    return Array.from(txMap.values()).sort((a, b) => 
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
   } catch (error) {
     console.error('Error fetching transaction history:', error);
-    return [];
+    // Fallback to local storage only
+    const key = `transactions_${address}`;
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : [];
   }
 };
 
@@ -123,6 +163,21 @@ export const sendStablecoin = async (
     
     const response = await walletProvider.signAndSubmitTransaction(payload);
     await aptos.waitForTransaction({ transactionHash: response.hash });
+    
+    // Store transaction in local history
+    const from = await walletProvider.account();
+    storeTransaction(from.address, {
+      id: response.hash,
+      type: 'send',
+      amount,
+      currency,
+      recipient: to,
+      sender: from.address,
+      status: 'completed',
+      timestamp: new Date().toISOString(),
+      txHash: response.hash,
+      fee: 0,
+    });
     
     return response;
   } catch (error) {
@@ -152,6 +207,22 @@ export const swapCurrency = async (
     
     const response = await walletProvider.signAndSubmitTransaction(payload);
     await aptos.waitForTransaction({ transactionHash: response.hash });
+    
+    // Store transaction in local history
+    const account = await walletProvider.account();
+    storeTransaction(account.address, {
+      id: response.hash,
+      type: 'swap',
+      amount,
+      fromCurrency: from,
+      toCurrency: to,
+      currency: from,
+      sender: account.address,
+      status: 'completed',
+      timestamp: new Date().toISOString(),
+      txHash: response.hash,
+      fee: 0,
+    });
     
     return response;
   } catch (error) {
@@ -219,6 +290,22 @@ export const batchPayrollSend = async (
     
     const response = await walletProvider.signAndSubmitTransaction(payload);
     await aptos.waitForTransaction({ transactionHash: response.hash });
+    
+    // Store transaction in local history
+    const account = await walletProvider.account();
+    const totalAmount = recipients.reduce((sum, r) => sum + r.amount, 0);
+    storeTransaction(account.address, {
+      id: response.hash,
+      type: 'payroll',
+      amount: totalAmount,
+      currency,
+      sender: account.address,
+      batchSize: recipients.length,
+      status: 'completed',
+      timestamp: new Date().toISOString(),
+      txHash: response.hash,
+      fee: 0,
+    });
     
     return response;
   } catch (error) {
