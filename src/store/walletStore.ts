@@ -31,18 +31,46 @@ export const useWalletStore = create<WalletStore>()(
       // Actions
       connect: async (walletType) => {
         try {
-          // Mock wallet connection
-          const mockAddress = `0x${Math.random().toString(16).substr(2, 40)}`;
-          
+          let provider: any = null;
+          let address: string | null = null;
+
+          if (typeof window === 'undefined') {
+            throw new Error('Window not available');
+          }
+
+          // Get the appropriate wallet provider
+          switch (walletType) {
+            case 'petra':
+              provider = (window as any).aptos;
+              break;
+            case 'martian':
+              provider = (window as any).martian;
+              break;
+            case 'pontem':
+              provider = (window as any).pontem;
+              break;
+          }
+
+          if (!provider) {
+            throw new Error(`${walletType} wallet not found`);
+          }
+
+          // Connect to wallet
+          const response = await provider.connect();
+          address = response.address || response.account?.address;
+
+          if (!address) {
+            throw new Error('Failed to get wallet address');
+          }
+
           set({
             isConnected: true,
-            address: mockAddress,
+            address,
             walletType,
-            balance: Math.random() * 1000, // Mock balance
+            balance: 0, // Will be updated by useBalances hook
           });
 
-          // In real app, would integrate with actual wallet adapters
-          console.log(`Connected to ${walletType} wallet`);
+          console.log(`Connected to ${walletType} wallet: ${address}`);
         } catch (error) {
           console.error('Failed to connect wallet:', error);
           throw error;

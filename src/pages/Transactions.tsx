@@ -15,9 +15,10 @@ import {
   Calendar,
   Download
 } from 'lucide-react';
-import { mockTransactions } from '@/services/mockData';
+import { useTransactions } from '@/hooks/useTransactions';
 
 const Transactions = () => {
+  const { transactions } = useTransactions();
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -26,7 +27,7 @@ const Transactions = () => {
   const itemsPerPage = 10;
   
   // Filter transactions
-  const filteredTransactions = mockTransactions.filter(tx => {
+  const filteredTransactions = transactions.filter(tx => {
     const matchesSearch = 
       tx.recipient?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tx.sender?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -96,10 +97,10 @@ const Transactions = () => {
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: 'Total Transactions', value: mockTransactions.length, icon: ArrowUpRight },
-          { label: 'Completed', value: mockTransactions.filter(tx => tx.status === 'completed').length, icon: ArrowDownLeft },
-          { label: 'Total Volume', value: `$${mockTransactions.reduce((sum, tx) => sum + tx.amount, 0).toLocaleString()}`, icon: TrendingUp },
-          { label: 'This Month', value: mockTransactions.filter(tx => new Date(tx.timestamp).getMonth() === new Date().getMonth()).length, icon: Calendar },
+          { label: 'Total Transactions', value: transactions.length, icon: ArrowUpRight },
+          { label: 'Completed', value: transactions.filter(tx => tx.status === 'completed').length, icon: ArrowDownLeft },
+          { label: 'Total Volume', value: `$${transactions.reduce((sum, tx) => sum + tx.amount, 0).toLocaleString()}`, icon: TrendingUp },
+          { label: 'This Month', value: transactions.filter(tx => new Date(tx.timestamp).getMonth() === new Date().getMonth()).length, icon: Calendar },
         ].map((stat, index) => (
           <Card 
             key={stat.label} 

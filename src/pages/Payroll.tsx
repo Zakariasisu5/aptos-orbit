@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Progress } from '@/components/ui/progress';
 import { Upload, Users, Plus, Trash2, Send, CheckCircle, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { mockPayrollData } from '@/services/mockData';
 
 interface Employee {
   id: string;
@@ -21,7 +20,7 @@ interface Employee {
 
 const Payroll = () => {
   const { toast } = useToast();
-  const [employees, setEmployees] = useState<Employee[]>(mockPayrollData);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);

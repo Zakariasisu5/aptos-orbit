@@ -11,20 +11,19 @@ import {
   Activity,
   DollarSign
 } from 'lucide-react';
-import { mockBalances, mockTransactions, mockUser } from '@/services/mockData';
+import { useBalances } from '@/hooks/useBalances';
+import { useTransactions } from '@/hooks/useTransactions';
 
 const Dashboard = () => {
-  const totalBalance = Object.values(mockBalances).reduce(
-    (sum, { usdValue }) => sum + usdValue, 
-    0
-  );
+  const { balances, totalValue } = useBalances();
+  const { transactions } = useTransactions();
 
-  const recentTransactions = mockTransactions.slice(0, 5);
+  const recentTransactions = transactions.slice(0, 5);
 
   const quickStats = [
     {
       label: 'Total Balance',
-      value: `$${totalBalance.toLocaleString()}`,
+      value: `$${totalValue.toLocaleString()}`,
       change: '+12.5%',
       trend: 'up',
       icon: Wallet,
@@ -102,7 +101,7 @@ const Dashboard = () => {
               Your Balances
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
-              {Object.entries(mockBalances).map(([currency, data], index) => (
+              {Object.entries(balances).map(([currency, data], index) => (
                 <Card 
                   key={currency} 
                   variant="glass" 

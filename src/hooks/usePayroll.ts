@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { mockPayrollData } from '@/services/mockData';
+import { useWalletStore } from '@/store/walletStore';
+import { batchPayrollSend, getWalletProvider } from '@/services/aptosService';
 
 export interface PayrollEmployee {
   id: string;
@@ -21,7 +22,8 @@ export interface PayrollBatch {
 }
 
 export const usePayroll = () => {
-  const [employees, setEmployees] = useState<PayrollEmployee[]>(mockPayrollData);
+  const { walletType } = useWalletStore();
+  const [employees, setEmployees] = useState<PayrollEmployee[]>([]);
   const [batches, setBatches] = useState<PayrollBatch[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +49,10 @@ export const usePayroll = () => {
   };
 
   const processBatch = async (employeeList: PayrollEmployee[]): Promise<PayrollBatch> => {
+    if (!walletType) {
+      throw new Error('Wallet not connected');
+    }
+
     setIsLoading(true);
     setError(null);
     
@@ -61,8 +67,19 @@ export const usePayroll = () => {
       
       setBatches(prev => [batch, ...prev]);
       
-      // Simulate processing
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Get wallet provider and send batch transaction
+      const walletProvider = getWalletProvider(walletType);
+      if (!walletProvider) {
+        throw new Error('Wallet provider not available');
+      }
+
+      const recipients = employeeList.map(emp => ({
+        wallet: emp.wallet,
+        amount: emp.amount,
+        currency: emp.currency,
+      }));
+
+      await batchPayrollSend(walletProvider, recipients);
       
       const completedBatch: PayrollBatch = {
         ...batch,
@@ -76,7 +93,18 @@ export const usePayroll = () => {
       
       return completedBatch;
     } catch (err) {
-      setError('Failed to process payroll batch');
+      setError('Failed to process payroll batch on blockchain');
+      console.error(err);
+      
+      // Update batch status to failed
+      setBatches(prev => 
+        prev.map(b => 
+          b.status === 'processing' 
+            ? { ...b, status: 'failed' as const } 
+            : b
+        )
+      );
+      
       throw err;
     } finally {
       setIsLoading(false);
@@ -110,14 +138,13 @@ export const usePayroll = () => {
   };
 
   useEffect(() => {
-    // Load saved data from localStorage or API
+    // Load saved data from localStorage
     const savedEmployees = localStorage.getItem('payroll-employees');
     if (savedEmployees) {
       try {
         setEmployees(JSON.parse(savedEmployees));
       } catch {
-        // Fallback to mock data
-        setEmployees(mockPayrollData);
+        setEmployees([]);
       }
     }
   }, []);

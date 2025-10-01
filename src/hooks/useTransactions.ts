@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { mockTransactions } from '@/services/mockData';
+import { useWalletStore } from '@/store/walletStore';
+import { getTransactionHistory } from '@/services/aptosService';
 
 export interface Transaction {
   id: string;
@@ -19,22 +20,26 @@ export interface Transaction {
 }
 
 export const useTransactions = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
+  const { address, isConnected } = useWalletStore();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const refreshTransactions = async () => {
+    if (!address || !isConnected) {
+      setTransactions([]);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // In real app, would fetch from blockchain/API
-      setTransactions(mockTransactions);
+      const fetchedTransactions = await getTransactionHistory(address);
+      setTransactions(fetchedTransactions);
     } catch (err) {
-      setError('Failed to fetch transactions');
+      setError('Failed to fetch transactions from blockchain');
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +59,7 @@ export const useTransactions = () => {
 
   useEffect(() => {
     refreshTransactions();
-  }, []);
+  }, [address, isConnected]);
 
   return {
     transactions,

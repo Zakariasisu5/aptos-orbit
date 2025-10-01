@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { mockFXRates } from '@/services/mockData';
+import { getFXRates } from '@/services/aptosService';
 
 export interface FXRate {
   rate: number;
@@ -12,7 +12,7 @@ export interface FXRates {
 }
 
 export const useFXRates = () => {
-  const [rates, setRates] = useState<FXRates>(mockFXRates);
+  const [rates, setRates] = useState<FXRates>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,26 +21,11 @@ export const useFXRates = () => {
     setError(null);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // In real app, would fetch from price feeds/DEX
-      const updatedRates = { ...mockFXRates };
-      
-      // Simulate rate fluctuations
-      Object.keys(updatedRates).forEach(pair => {
-        const variance = (Math.random() - 0.5) * 0.02; // ±1% variance
-        updatedRates[pair] = {
-          ...updatedRates[pair],
-          rate: updatedRates[pair].rate * (1 + variance),
-          change24h: variance * 100,
-          trend: variance > 0.005 ? 'up' : variance < -0.005 ? 'down' : 'stable',
-        };
-      });
-      
-      setRates(updatedRates);
+      const fetchedRates = await getFXRates();
+      setRates(fetchedRates);
     } catch (err) {
-      setError('Failed to fetch exchange rates');
+      setError('Failed to fetch exchange rates from blockchain');
+      console.error(err);
     } finally {
       setIsLoading(false);
     }

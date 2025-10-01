@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { mockBalances } from '@/services/mockData';
+import { useWalletStore } from '@/store/walletStore';
+import { getUserBalances } from '@/services/aptosService';
 
 export interface Balance {
   balance: number;
@@ -11,22 +12,26 @@ export interface Balances {
 }
 
 export const useBalances = () => {
-  const [balances, setBalances] = useState<Balances>(mockBalances);
+  const { address, isConnected } = useWalletStore();
+  const [balances, setBalances] = useState<Balances>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const refreshBalances = async () => {
+    if (!address || !isConnected) {
+      setBalances({});
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // In real app, would fetch from blockchain/API
-      setBalances(mockBalances);
+      const fetchedBalances = await getUserBalances(address);
+      setBalances(fetchedBalances);
     } catch (err) {
-      setError('Failed to fetch balances');
+      setError('Failed to fetch balances from blockchain');
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -34,7 +39,7 @@ export const useBalances = () => {
 
   useEffect(() => {
     refreshBalances();
-  }, []);
+  }, [address, isConnected]);
 
   const totalValue = Object.values(balances).reduce(
     (sum, { usdValue }) => sum + usdValue, 

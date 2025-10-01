@@ -7,10 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ArrowUpRight, User, DollarSign, Send, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { mockFXRates } from '@/services/mockData';
+import { useFXRates } from '@/hooks/useFXRates';
 
 const SendMoney = () => {
   const { toast } = useToast();
+  const { rates } = useFXRates();
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState('USDC');
@@ -20,7 +21,7 @@ const SendMoney = () => {
 
   const currencies = ['USDC', 'EURC', 'GHS-stable', 'USDT'];
   
-  const currentRate = mockFXRates['APT/USDC']?.rate || 1;
+  const currentRate = rates['APT/USDC']?.rate || 1;
   const fee = parseFloat(amount) * 0.001; // 0.1% fee
   const total = parseFloat(amount) + fee;
 
