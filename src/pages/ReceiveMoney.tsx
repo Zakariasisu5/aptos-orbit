@@ -13,7 +13,7 @@ const ReceiveMoney = () => {
   const [amount, setAmount] = useState('');
 
   const walletAddress = mockUser.wallet;
-  const paymentLink = `https://globepayx.com/pay/${walletAddress}${amount ? `?amount=${amount}` : ''}`;
+  const paymentLink = `https://globepay.vercel.app/pay/${walletAddress}${amount ? `?amount=${amount}` : ''}`;
 
   const copyToClipboard = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
