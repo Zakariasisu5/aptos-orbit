@@ -32,7 +32,6 @@ export const useWalletStore = create<WalletStore>()(
       connect: async (walletType) => {
         try {
           let provider: any = null;
-          let address: string | null = null;
 
           if (typeof window === 'undefined') {
             throw new Error('Window not available');
@@ -57,7 +56,15 @@ export const useWalletStore = create<WalletStore>()(
 
           // Connect to wallet
           const response = await provider.connect();
-          address = response.address || response.account?.address;
+
+          // Normalize address across wallets
+          let address: string | null = response.address || response.account?.address || null;
+
+          // Some wallets require explicit account() call
+          if (!address && provider.account) {
+            const acc = await provider.account();
+            address = acc?.address ?? null;
+          }
 
           if (!address) {
             throw new Error('Failed to get wallet address');
@@ -67,7 +74,7 @@ export const useWalletStore = create<WalletStore>()(
             isConnected: true,
             address,
             walletType,
-            balance: 0, // Will be updated by useBalances hook
+            balance: 0, // can be updated with updateBalance later
           });
 
           console.log(`Connected to ${walletType} wallet: ${address}`);
