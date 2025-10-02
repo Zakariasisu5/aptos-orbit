@@ -27,6 +27,7 @@
   - Filterable transaction table
   - Explorer links for transparency
   - Audit-ready event logging
+  - 
 
 <!-- Treasury feature removed -->
 
