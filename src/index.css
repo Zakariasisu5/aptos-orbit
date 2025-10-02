@@ -78,6 +78,70 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
+  .light {
+    /* Core Fintech Palette - Light Mode */
+    --primary: 230 43% 17%;           /* Deep Navy */
+    --primary-foreground: 0 0% 100%;  /* White text */
+    
+    --accent: 177 70% 56%;            /* Teal */
+    --accent-foreground: 0 0% 100%;
+    
+    --secondary: 35 92% 66%;          /* Warm Amber */
+    --secondary-foreground: 230 43% 17%;
+    
+    /* Background System */
+    --background: 0 0% 98%;           /* Light gray background */
+    --background-elevated: 0 0% 100%; /* White for cards */
+    --background-glass: 0 0% 100%;    /* White glassmorphism */
+    
+    --foreground: 230 43% 17%;        /* Dark text */
+    --foreground-muted: 230 25% 45%;  /* Medium text */
+    --foreground-subtle: 230 15% 65%; /* Light text */
+    
+    /* UI Elements */
+    --card: 0 0% 100%;
+    --card-foreground: 230 43% 17%;
+    --card-glass: 0 0% 100%;
+    
+    --border: 220 13% 91%;
+    --border-subtle: 220 13% 95%;
+    --input: 0 0% 96%;
+    --ring: 177 70% 56%;
+    
+    /* Status Colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 35 92% 66%;
+    --warning-foreground: 230 43% 17%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(230 43% 17%) 0%, hsl(177 70% 56%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(177 70% 56%) 0%, hsl(35 92% 66%) 100%);
+    --gradient-surface: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(0 0% 98%) 100%);
+    
+    /* Shadows & Effects */
+    --shadow-glow: 0 0 40px hsl(177 70% 56% / 0.15);
+    --shadow-card: 0 4px 20px hsl(230 35% 30% / 0.08);
+    --shadow-elevated: 0 8px 32px hsl(230 35% 30% / 0.12);
+    
+    /* Animation Timings */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
 }
 
 @layer base {
