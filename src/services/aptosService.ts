@@ -76,12 +76,21 @@ const storeTransaction = (address: string, transaction: any) => {
     const key = `transactions_${address}`;
     const stored = localStorage.getItem(key);
     const transactions = stored ? JSON.parse(stored) : [];
-    transactions.unshift(transaction);
-    // Keep last 100 transactions
-    if (transactions.length > 100) transactions.splice(100);
-    localStorage.setItem(key, JSON.stringify(transactions));
+    
+    // Check if transaction already exists (by hash or id)
+    const exists = transactions.some((tx: any) => 
+      tx.txHash === transaction.txHash || tx.id === transaction.id
+    );
+    
+    if (!exists) {
+      transactions.unshift(transaction);
+      // Keep last 100 transactions
+      if (transactions.length > 100) transactions.splice(100);
+      localStorage.setItem(key, JSON.stringify(transactions));
+      console.log('✅ Transaction stored:', transaction.type, transaction.txHash);
+    }
   } catch (error) {
-    console.error('Error storing transaction:', error);
+    console.error('❌ Error storing transaction:', error);
   }
 };
 
@@ -165,14 +174,16 @@ export const sendStablecoin = async (
     await aptos.waitForTransaction({ transactionHash: response.hash });
     
     // Store transaction in local history
-    const from = await walletProvider.account();
-    storeTransaction(from.address, {
+    const account = await walletProvider.account();
+    const fromAddress = account?.address || account;
+    
+    storeTransaction(fromAddress, {
       id: response.hash,
       type: 'send',
       amount,
       currency,
       recipient: to,
-      sender: from.address,
+      sender: fromAddress,
       status: 'completed',
       timestamp: new Date().toISOString(),
       txHash: response.hash,
@@ -210,14 +221,16 @@ export const swapCurrency = async (
     
     // Store transaction in local history
     const account = await walletProvider.account();
-    storeTransaction(account.address, {
+    const fromAddress = account?.address || account;
+    
+    storeTransaction(fromAddress, {
       id: response.hash,
       type: 'swap',
       amount,
       fromCurrency: from,
       toCurrency: to,
       currency: from,
-      sender: account.address,
+      sender: fromAddress,
       status: 'completed',
       timestamp: new Date().toISOString(),
       txHash: response.hash,
@@ -293,13 +306,15 @@ export const batchPayrollSend = async (
     
     // Store transaction in local history
     const account = await walletProvider.account();
+    const fromAddress = account?.address || account;
     const totalAmount = recipients.reduce((sum, r) => sum + r.amount, 0);
-    storeTransaction(account.address, {
+    
+    storeTransaction(fromAddress, {
       id: response.hash,
       type: 'payroll',
       amount: totalAmount,
       currency,
-      sender: account.address,
+      sender: fromAddress,
       batchSize: recipients.length,
       status: 'completed',
       timestamp: new Date().toISOString(),

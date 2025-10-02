@@ -42,22 +42,31 @@ export const useWalletStore = create<WalletStore>()(
           switch (walletType) {
             case 'petra':
               provider = (window as any).aptos;
+              if (provider) {
+                // Petra-specific connection
+                const response = await provider.connect();
+                address = response?.address;
+              }
               break;
             case 'martian':
               provider = (window as any).martian;
+              if (provider) {
+                const response = await provider.connect();
+                address = response?.address || response?.account?.address;
+              }
               break;
             case 'pontem':
               provider = (window as any).pontem;
+              if (provider) {
+                const response = await provider.connect();
+                address = response?.address || response?.account?.address;
+              }
               break;
           }
 
           if (!provider) {
             throw new Error(`${walletType} wallet not found`);
           }
-
-          // Connect to wallet
-          const response = await provider.connect();
-          address = response.address || response.account?.address;
 
           if (!address) {
             throw new Error('Failed to get wallet address');
@@ -70,9 +79,9 @@ export const useWalletStore = create<WalletStore>()(
             balance: 0, // Will be updated by useBalances hook
           });
 
-          console.log(`Connected to ${walletType} wallet: ${address}`);
+          console.log(`✅ Connected to ${walletType} wallet: ${address}`);
         } catch (error) {
-          console.error('Failed to connect wallet:', error);
+          console.error('❌ Failed to connect wallet:', error);
           throw error;
         }
       },
