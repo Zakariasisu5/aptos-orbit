@@ -13,7 +13,7 @@ const ReceiveMoney = () => {
   const [amount, setAmount] = useState('');
 
   const walletAddress = mockUser.wallet;
-  const paymentLink = `https://globepay.vercel.app/pay/${walletAddress}${amount ? `?amount=${amount}` : ''}`;
+  const paymentLink = `https://globepayx.com/pay/${walletAddress}${amount ? `?amount=${amount}` : ''}`;
 
   const copyToClipboard = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
@@ -97,19 +97,6 @@ const ReceiveMoney = () => {
                 <Copy className="w-4 h-4 mr-2" />
                 Copy Address
               </Button>
-
-
-              
-              </> 
-            ) : (
-            <Button 
-              variant="primary"
-              classname="w-full"
-              onclick={() => handleConnect('petra')}// or open your WalletConnect modal
-              > Click to Connect Wallet
-            </Button>
-
-            
             </div>
           </div>
         </Card>
