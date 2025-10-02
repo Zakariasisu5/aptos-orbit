@@ -97,6 +97,19 @@ const ReceiveMoney = () => {
                 <Copy className="w-4 h-4 mr-2" />
                 Copy Address
               </Button>
+
+
+              
+              </> 
+            ) : (
+            <Button 
+              variant="primary"
+              classname="w-full"
+              onclick={() => handleConnect('petra')}// or open your WalletConnect modal
+              > Click to Connect Wallet
+            </Button>
+
+            
             </div>
           </div>
         </Card>
