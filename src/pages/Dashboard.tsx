@@ -5,18 +5,20 @@ import { Card } from '@/components/ui/GlassCard';
 import { 
   ArrowUpRight, 
   ArrowDownLeft, 
-  TrendingUp, 
-  Wallet,
+  TrendingUp,
   Users,
+  Wallet,
   Activity,
   DollarSign
 } from 'lucide-react';
 import { useBalances } from '@/hooks/useBalances';
 import { useTransactions } from '@/hooks/useTransactions';
+import { ContractStatus } from '@/components/contract/ContractStatus';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Dashboard = () => {
-  const { balances, totalValue } = useBalances();
-  const { transactions } = useTransactions();
+  const { balances, totalValue, isLoading: balancesLoading } = useBalances();
+  const { transactions, isLoading: txLoading } = useTransactions();
 
   const recentTransactions = transactions.slice(0, 5);
 
@@ -74,12 +76,26 @@ const Dashboard = () => {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Balance Cards */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Contract Status */}
+          <ContractStatus />
           <div>
             <h2 className="text-xl font-semibold mb-4 font-display">
               Your Balances
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
-              {Object.entries(balances).map(([currency, data], index) => (
+              {balancesLoading ? (
+                <>
+                  <Skeleton className="h-32" />
+                  <Skeleton className="h-32" />
+                </>
+              ) : Object.entries(balances).length === 0 ? (
+                <Card variant="glass" className="col-span-2 p-6 text-center">
+                  <p className="text-foreground-muted">
+                    Connect your wallet to view balances
+                  </p>
+                </Card>
+              ) : (
+                Object.entries(balances).map(([currency, data], index) => (
                 <Card 
                   key={currency} 
                   variant="glass" 
@@ -101,7 +117,8 @@ const Dashboard = () => {
                     </p>
                   </div>
                 </Card>
-              ))}
+              ))
+              )}
             </div>
           </div>
 
@@ -157,7 +174,18 @@ const Dashboard = () => {
           </div>
           
           <Card variant="glass" className="space-y-4">
-            {recentTransactions.map((tx, index) => (
+            {txLoading ? (
+              <>
+                <Skeleton className="h-16" />
+                <Skeleton className="h-16" />
+                <Skeleton className="h-16" />
+              </>
+            ) : recentTransactions.length === 0 ? (
+              <div className="p-6 text-center text-foreground-muted">
+                No transactions yet
+              </div>
+            ) : (
+              recentTransactions.map((tx, index) => (
               <div 
                 key={tx.id} 
                 className="flex items-center justify-between p-3 rounded-lg hover:bg-card-glass/50 transition-colors fade-in"
@@ -190,7 +218,8 @@ const Dashboard = () => {
                   </p>
                 </div>
               </div>
-            ))}
+              ))
+            )}
           </Card>
         </div>
       </div>

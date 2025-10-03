@@ -73,15 +73,39 @@
 
 ---
 
-## 🛠 Setup Instructions
+## 🛠 Quick Start
+
+### 1. Install Dependencies
 
 ```bash
-# Clone the repo
-git clone https://github.com/your-org/globepayx-frontend.git
-cd globepayx-frontend
-
-# Install dependencies
 npm install
+```
 
-# Start development server
+### 2. Start Development Server
+
+```bash
 npm run dev
+```
+
+The app will be available at `http://localhost:5173`
+
+### 3. Connect Your Wallet
+
+- Install [Petra Wallet](https://petra.app/), [Martian Wallet](https://martianwallet.xyz/), or [Pontem Wallet](https://pontem.network/pontem-wallet)
+- Fund your wallet with test APT from the [Aptos Faucet](https://aptoslabs.com/testnet-faucet)
+- Click "Connect Wallet" in the app navbar
+
+### 4. Deploy Smart Contracts (Optional)
+
+For full functionality, deploy the Move contracts to Aptos testnet:
+
+```bash
+# See detailed instructions in DEPLOYMENT.md
+cd Contracts
+node compile.js
+aptos move publish --package-dir . --named-addresses GLOBE_CORE=0xYourAddress,GLOBE_BUSINESS=0xYourAddress
+```
+
+Then update `src/config/contracts.ts` with your deployed contract addresses.
+
+**📚 Full deployment guide:** See [DEPLOYMENT.md](./DEPLOYMENT.md)

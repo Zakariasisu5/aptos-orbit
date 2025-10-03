@@ -1,5 +1,13 @@
 import { Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk';
-import { CONTRACT_ADDRESSES, SUPPORTED_CURRENCIES, CURRENCY_DECIMALS, NETWORK } from '@/config/contracts';
+import { 
+  CONTRACT_MODULES, 
+  SUPPORTED_CURRENCIES, 
+  CURRENCY_DECIMALS, 
+  NETWORK,
+  GLOBE_CORE,
+  GLOBE_BUSINESS,
+  CONTRACT_FUNCTIONS 
+} from '@/config/contracts';
 
 // Initialize Aptos client
 const config = new AptosConfig({ network: NETWORK as Network });
@@ -154,7 +162,7 @@ export const getTransactionHistory = async (address: string) => {
   }
 };
 
-// Send stablecoin via Remittance.move
+// Send stablecoin via GlobePayXCore::send_stablecoin
 export const sendStablecoin = async (
   walletProvider: any,
   to: string,
@@ -163,15 +171,24 @@ export const sendStablecoin = async (
 ) => {
   try {
     const rawAmount = parseAmount(amount, currency);
+    const coinType = SUPPORTED_CURRENCIES[currency as keyof typeof SUPPORTED_CURRENCIES];
+    
+    if (!coinType) {
+      throw new Error(`Unsupported currency: ${currency}`);
+    }
     
     const payload = {
-      function: `${CONTRACT_ADDRESSES.REMITTANCE}::remittance::send_payment`,
-      type_arguments: [SUPPORTED_CURRENCIES[currency as keyof typeof SUPPORTED_CURRENCIES]],
+      function: `${CONTRACT_MODULES.CORE}::${CONTRACT_FUNCTIONS.SEND_STABLECOIN}`,
+      type_arguments: [coinType],
       arguments: [to, rawAmount],
     };
     
+    console.log('📤 Sending stablecoin:', { to, amount, currency, rawAmount });
+    
     const response = await walletProvider.signAndSubmitTransaction(payload);
     await aptos.waitForTransaction({ transactionHash: response.hash });
+    
+    console.log('✅ Transaction successful:', response.hash);
     
     // Store transaction in local history
     const account = await walletProvider.account();
@@ -192,12 +209,12 @@ export const sendStablecoin = async (
     
     return response;
   } catch (error) {
-    console.error('Error sending stablecoin:', error);
+    console.error('❌ Error sending stablecoin:', error);
     throw error;
   }
 };
 
-// Swap currency via ForexSwap.move
+// Swap currency via GlobePayXCore::swap_request
 export const swapCurrency = async (
   walletProvider: any,
   from: string,
@@ -206,18 +223,29 @@ export const swapCurrency = async (
 ) => {
   try {
     const rawAmount = parseAmount(amount, from);
+    const coinTypeIn = SUPPORTED_CURRENCIES[from as keyof typeof SUPPORTED_CURRENCIES];
+    const coinTypeOut = SUPPORTED_CURRENCIES[to as keyof typeof SUPPORTED_CURRENCIES];
+    
+    if (!coinTypeIn || !coinTypeOut) {
+      throw new Error(`Unsupported currency pair: ${from}/${to}`);
+    }
+    
+    // Mock exchange rate (1e18 precision) - in production, fetch from oracle
+    const rate = 1000000000000000000n; // 1:1 rate for demo
+    const minOut = 0; // Accept any output amount for demo
     
     const payload = {
-      function: `${CONTRACT_ADDRESSES.FOREX_SWAP}::forex_swap::swap`,
-      type_arguments: [
-        SUPPORTED_CURRENCIES[from as keyof typeof SUPPORTED_CURRENCIES],
-        SUPPORTED_CURRENCIES[to as keyof typeof SUPPORTED_CURRENCIES],
-      ],
-      arguments: [rawAmount, 0], // minAmountOut = 0 for simplicity
+      function: `${CONTRACT_MODULES.CORE}::${CONTRACT_FUNCTIONS.SWAP_REQUEST}`,
+      type_arguments: [coinTypeIn, coinTypeOut],
+      arguments: [rawAmount, minOut, rate.toString()],
     };
+    
+    console.log('🔄 Requesting swap:', { from, to, amount, rawAmount });
     
     const response = await walletProvider.signAndSubmitTransaction(payload);
     await aptos.waitForTransaction({ transactionHash: response.hash });
+    
+    console.log('✅ Swap request successful:', response.hash);
     
     // Store transaction in local history
     const account = await walletProvider.account();
@@ -231,7 +259,7 @@ export const swapCurrency = async (
       toCurrency: to,
       currency: from,
       sender: fromAddress,
-      status: 'completed',
+      status: 'processing',
       timestamp: new Date().toISOString(),
       txHash: response.hash,
       fee: 0,
@@ -239,7 +267,7 @@ export const swapCurrency = async (
     
     return response;
   } catch (error) {
-    console.error('Error swapping currency:', error);
+    console.error('❌ Error swapping currency:', error);
     throw error;
   }
 };
@@ -285,24 +313,44 @@ export const getFXRates = async () => {
   }
 };
 
-// Batch payroll send via Payroll.move
+// Batch payroll send via GlobePayXBusiness::batch_pay
 export const batchPayrollSend = async (
   walletProvider: any,
   recipients: Array<{ wallet: string; amount: number; currency: string }>
 ) => {
   try {
+    if (!recipients.length) {
+      throw new Error('No recipients provided');
+    }
+    
     const addresses = recipients.map(r => r.wallet);
     const amounts = recipients.map(r => parseAmount(r.amount, r.currency));
-    const currency = recipients[0]?.currency || 'USDC';
+    const currency = recipients[0]?.currency || 'APT';
+    const coinType = SUPPORTED_CURRENCIES[currency as keyof typeof SUPPORTED_CURRENCIES];
+    
+    if (!coinType) {
+      throw new Error(`Unsupported currency: ${currency}`);
+    }
+    
+    // Memo for the batch payment
+    const memo = new TextEncoder().encode(`Payroll batch - ${recipients.length} recipients`);
     
     const payload = {
-      function: `${CONTRACT_ADDRESSES.PAYROLL}::payroll::batch_send`,
-      type_arguments: [SUPPORTED_CURRENCIES[currency as keyof typeof SUPPORTED_CURRENCIES]],
-      arguments: [addresses, amounts],
+      function: `${CONTRACT_MODULES.BUSINESS}::${CONTRACT_FUNCTIONS.BATCH_PAY}`,
+      type_arguments: [coinType],
+      arguments: [addresses, amounts, Array.from(memo)],
     };
+    
+    console.log('💼 Sending batch payroll:', { 
+      recipients: recipients.length, 
+      currency, 
+      totalAmount: recipients.reduce((sum, r) => sum + r.amount, 0) 
+    });
     
     const response = await walletProvider.signAndSubmitTransaction(payload);
     await aptos.waitForTransaction({ transactionHash: response.hash });
+    
+    console.log('✅ Batch payroll successful:', response.hash);
     
     // Store transaction in local history
     const account = await walletProvider.account();
@@ -324,7 +372,7 @@ export const batchPayrollSend = async (
     
     return response;
   } catch (error) {
-    console.error('Error sending batch payroll:', error);
+    console.error('❌ Error sending batch payroll:', error);
     throw error;
   }
 };
