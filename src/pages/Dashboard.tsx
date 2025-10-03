@@ -76,8 +76,6 @@ const Dashboard = () => {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Balance Cards */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Contract Status */}
-          <ContractStatus />
           <div>
             <h2 className="text-xl font-semibold mb-4 font-display">
               Your Balances
