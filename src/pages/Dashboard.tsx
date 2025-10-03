@@ -24,29 +24,11 @@ const Dashboard = () => {
     {
       label: 'Total Balance',
       value: `$${totalValue.toLocaleString()}`,
-      change: '+12.5%',
-      trend: 'up',
       icon: Wallet,
     },
     {
-      label: 'Monthly Volume',
-      value: '$45,670',
-      change: '+8.2%',
-      trend: 'up',
-      icon: TrendingUp,
-    },
-    {
-      label: 'Active Payees',
-      value: '24',
-      change: '+3',
-      trend: 'up',
-      icon: Users,
-    },
-    {
-      label: 'Transactions',
-      value: '127',
-      change: '+15.3%',
-      trend: 'up',
+      label: 'Total Transactions',
+      value: transactions.length.toString(),
       icon: Activity,
     },
   ];
@@ -79,10 +61,6 @@ const Dashboard = () => {
                 </p>
                 <p className="text-2xl font-bold">
                   {stat.value}
-                </p>
-                <p className="text-sm text-success flex items-center mt-1">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  {stat.change}
                 </p>
               </div>
               <div className="bg-gradient-accent p-3 rounded-xl">
